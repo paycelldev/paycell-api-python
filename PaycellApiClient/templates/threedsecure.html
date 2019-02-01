@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>iPay APM 3D-Secure Processing Page</title>
+</head>
+<body>
+
+<script type="text/javascript">
+
+</script>
+<form target="_blank" name="topUpForm" action="https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure"
+      method="POST">
+    <table>
+        <td>
+            threeDSessionId :
+        </td>
+        <td>
+            <input type="Text" name="threeDSessionId" value="{{threeDSessionId}}" size="50">
+        </td>
+        </tr>
+        <tr>
+            <td>
+                callbackurl :
+            </td>
+            <td>
+                <input type="Text" name="callbackUrl" value="{{callbackUrl}}">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="submit" id="submitButton" Value="Bankaya Gönder">
+            </td>
+        </tr>
+
+    </table>
+</form>
+<SCRIPT LANGUAGE="Javascript" >
+    document.getElementById("submitButton").click();
+</SCRIPT>
+</body>
+</html>
