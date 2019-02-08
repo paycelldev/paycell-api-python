@@ -124,3 +124,9 @@ def create_get_history_request(reconciliation_date, partition_no, client_ip):
     }
 
 
+def create_get_terms_of_service_request(client_ip):
+    return {
+        "requestHeader": create_request_header(client_ip)
+    }
+
+

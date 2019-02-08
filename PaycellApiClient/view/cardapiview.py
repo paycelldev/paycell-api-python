@@ -8,18 +8,14 @@ import json
 """
     These views are implemented to use rest api's card operations
     active_tabs dict is used for frontend purposes 
+    Important: prevent cross-site scripting all responses must be validated !!
 """
 
 def get_cards(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        active_tabs = {
-            "addCard": "",
-            "getCards": "active show",
-            "removeCard": ""
-        }
         response = cardapiservice.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'card_api_index.html', {"tabs": active_tabs, "getCardResponse": response, "msisdn": data["msisdn"]})
+        return render(request, 'card_api_index.html', {"tabs": util.select_active_card_tab("getCards"), "getCardResponse": response, "msisdn": data["msisdn"]})
 
 @csrf_exempt
 def hash_data(request):
@@ -33,9 +29,8 @@ def hash_data(request):
 def register_card(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        threed_session_id = None
-        if "threeDSessionId" in data:
-            threed_session_id = data["threeDSessionId"]
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
+        print(data, "\n", threed_session_id)
         response = cardapiservice.register_card(data["alias"], data["msisdn"], data["cardToken"], data["eulaId"], data["isDefault"], threed_session_id, util.get_client_ip(request))
         return HttpResponse(json.dumps(response), content_type='application/json')
 

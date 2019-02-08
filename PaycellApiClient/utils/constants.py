@@ -23,5 +23,5 @@ URL_GET_PROVISION_HISTORY = "https://tpay-test.turkcell.com.tr:443/tpay/provisio
 URL_PROVISION_FOR_MARKET_PLACE = "https://tpay-test.turkcell.com.tr:443/tpay/provision/services/restful/getCardToken/provisionForMarketPlace/"
 URL_GET_CARD_TOKEN = "https://omccstb.turkcell.com.tr/paymentmanagement/rest/getCardTokenSecure"
 URL_THREED_SECURE = "https://omccstb.turkcell.com.tr/paymentmanagement/rest/threeDSecure"
-
+URL_GET_TERMS_OF_SERVICE = "https://tpay-test.turkcell.com.tr:443/tpay/provision/services/restful/getCardToken/getTermsOfServiceContent/"
 

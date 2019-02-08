@@ -164,7 +164,13 @@ function addCard() {
                  "transactionId": transactionId
               },
         success: function(input) {
-            getToken(transactionId, transactionDateTime, input.hashValue);
+            var termsofservicePopup = window.open("termsofservice/", "termsofservice",'height=800,width=600');
+            var timer = setInterval(function() {
+                if (termsofservicePopup.closed) {
+                   getToken(transactionId, transactionDateTime, input.hashValue);
+                    clearInterval(timer);
+                }
+            }, 1000);
         },
     });
 }
@@ -199,8 +205,15 @@ function payWithStoredCard(el) {
     var transactionDateTime = generateTransactionDateTime();
     var cardId = $(el).parents("div.row").children().find("p#cardId").text();
     var expireMonth = $(el).parents("div.row").children().find("#storedCardExpireMonth").val();
-    var expireYear =$(el).parents("div.row").children().find("#storedCardExpireYear").val();
-    var cvc =$(el).parents("div.row").children().find("#storedCardCvc").val();
+    var expireYear = $(el).parents("div.row").children().find("#storedCardExpireYear").val();
+    var cvc = $(el).parents("div.row").children().find("#storedCardCvc").val();
+    var isShowEulaId = $(el).parents("div.row").children().find("#showEulaId").val();
+
+    //
+    if (isShowEulaId) {
+
+    }
+
 
     //if there is extra fields
     if (expireYear || expireMonth || cvc) {

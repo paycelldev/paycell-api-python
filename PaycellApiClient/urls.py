@@ -21,6 +21,7 @@ urlpatterns = [
     path('threedsessionresult/', paymentapiview.get_threed_session_result, name='get_threed_session_result'),
     path('summaryreconcile/', paymentapiview.summary_reconcile, name='summary_reconcile'),
     path('history/', paymentapiview.get_history, name='history'),
+    path('termsofservice/', paymentapiview.get_terms_of_service, name="termsofservice"),
 
     #Uses soap clients
     path('soap/', views.soap_index, name='soap_index'),

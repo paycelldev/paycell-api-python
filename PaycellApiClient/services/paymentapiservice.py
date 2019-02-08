@@ -65,3 +65,9 @@ def get_history(reconciliation_date, partition_no, client_ip):
     request = paymentapihelper.create_get_history_request(reconciliation_date, partition_no, client_ip)
     response = restclient.make_post_request(constants.URL_GET_PROVISION_HISTORY, request, {'content-type': 'application/json'})
     return response.json()
+
+
+def get_terms_of_service(client_ip):
+    request = paymentapihelper.create_get_terms_of_service_request(client_ip)
+    response = restclient.make_post_request(constants.URL_GET_TERMS_OF_SERVICE, request, {'content-type': 'application/json'})
+    return response.json()

@@ -8,31 +8,19 @@ import json
 """
     These views are implemented to use rest api's payment operations
     active_tabs dict is used for frontend purposes 
+    Important: prevent cross-site scripting all responses must be validated !!
 """
 
 def index(request):
-    active_tabs = {
-        "provision": "active show",
-        "provisionDetails": "",
-        "reconciliation": "",
-        "history": ""
-    }
-    return render(request, 'payment_api_index.html', {"tabs": active_tabs})
+    return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provision")})
 
 
 def provision(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        threed_session_id = None
-        card_token = None
-        card_id = None
-
-        if "cardId" in data:
-            card_id = data["cardId"]
-        if "cardToken" in data:
-            card_token = data["cardToken"]
-        if "threeDSessionId" in data:
-            threed_session_id = data["threeDSessionId"]
+        card_id = data["cardId"] if "cardId" in data else None
+        card_token = data["cardToken"] if "cardToken" in data else None
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
 
         if data["isMarketPlace"] == 'true':
             response, ref_no = paymentapiservice.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
@@ -47,14 +35,8 @@ def provision(request):
 def get_cards_for_payment(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        active_tabs = {
-            "provision": "active show",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": ""
-        }
         response = cardapiservice.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": active_tabs, "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
 
 
 #   Waits for msisdn and referenceNumber as url parameters
@@ -62,14 +44,8 @@ def inquire_provision(request):
     if request.method == 'GET':
         msisdn = request.GET.get("msisdn", "")
         ref_no = request.GET.get("referenceNumber", "")
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "active show",
-            "reconciliation": "",
-            "history": ""
-        }
         response = paymentapiservice.inquire_provision(msisdn, ref_no, util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": active_tabs, "inquireResponse": response})
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response})
 
 
 def reverse_provision(request):
@@ -89,15 +65,12 @@ def refund_provision(request):
 def get_threed_session_id(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        card_token = None
-        card_id = None
-
-        if "cardId" in data and data["cardId"] != "":
-            card_id = data["cardId"]
-        elif "cardToken" in data:
-            card_token = data["cardToken"]
+        print("threed_session data: ", data)
+        card_id = data["cardId"] if "cardId" in data and data["cardId"] != "" else None
+        card_token = data["cardToken"] if "cardToken" in data else None
 
         threed_session_response = paymentapiservice.get_threed_session_id(data["msisdn"], data["amount"], card_id, card_token, util.get_client_ip(request))
+        print("threed_session_response: ", threed_session_response)
         threed_session_id = threed_session_response["threeDSessionId"]
         return HttpResponse(json.dumps({"threeDSessionId": threed_session_id}), content_type='application/json')
 
@@ -115,18 +88,13 @@ def get_threed_session_result(request):
 
 def summary_reconcile(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "active show",
-            "history": ""
-        }
         data = request.POST.dict()
         response = paymentapiservice.get_summary_reconcile(data["reconciliationDate"], data["totalRefundAmount"],
                                                            data["totalRefundCount"], data["totalReverseAmount"],
                                                            data["totalReverseCount"], data["totalSaleAmount"],
                                                            data["totalSaleCount"], util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": active_tabs, "reconcileRequest": data, "reconcileResponse": response})
+
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("reconciliation"), "reconcileRequest": data, "reconcileResponse": response})
 
 
 #
@@ -135,13 +103,6 @@ def summary_reconcile(request):
 #
 def get_history(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": "active show"
-
-        }
         data = request.POST.dict()
         partition_number = 0
 
@@ -150,33 +111,32 @@ def get_history(request):
 
         if "nextPartitionNumber" in data:
             if data["nextPartitionNumber"] == 'None':
-                return render(request, 'payment_api_index.html', {"tabs": active_tabs, "historyResponse": {"transactionList": [{"transactionId": "End of history"}]}, "reconcileDate": data["reconcileDate"]})
+                return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": {"transactionList": [{"transactionId": "End of history"}]}, "reconcileDate": data["reconcileDate"]})
             elif data["nextPartitionNumber"] != "":
                 partition_number = data["nextPartitionNumber"]
 
         response = paymentapiservice.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": active_tabs, "historyResponse": response, "reconcileDate": data["reconcileDate"]})
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": response, "reconcileDate": data["reconcileDate"]})
 
 
 # it calls history service until there is no nextPartitionNumber in response
 def get_all_history(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": "active show"
-
-        }
         data = request.POST.dict()
         partition_number = 0
         transaction_list = []
-        response = paymentapiservice.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        while partition_number != "" and partition_number is not None:
-            partition_number = response["nextPartitionNo"]
-            if response["transactionList"] is not None:
-                transaction_list.extend(response["transactionList"])
+        while True:
             response = paymentapiservice.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": active_tabs, "historyResponse": {"transactionList": transaction_list}, "reconcileDate": data["reconcileDate"]})
+            partition_number = response["nextPartitionNo"]
+            if response["transactionList"]:
+                transaction_list.extend(response["transactionList"])
+
+            if not partition_number:
+                break
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": {"transactionList": transaction_list}, "reconcileDate": data["reconcileDate"]})
 
 
+@csrf_exempt
+def get_terms_of_service(request):
+    response = paymentapiservice.get_terms_of_service(util.get_client_ip(request))
+    return HttpResponse(response["termsOfServiceHtmlContentTR"], content_type='text/html; charset=utf-8')

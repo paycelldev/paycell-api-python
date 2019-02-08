@@ -15,13 +15,7 @@ provision_soap_client = ProvisionSoapClient()
 
 
 def index(request):
-    active_tabs = {
-        "provision": "active show",
-        "provisionDetails": "",
-        "reconciliation": "",
-        "history": ""
-    }
-    return render(request, 'payment_soap_index.html', {"tabs": active_tabs})
+    return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("provision")})
 
 
 # This view handles gets information from frontend and makes the provision api call
@@ -32,16 +26,9 @@ def index(request):
 def provision(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        threed_session_id = None
-        card_token = None
-        card_id = None
-
-        if "cardId" in data:
-            card_id = data["cardId"]
-        if "cardToken" in data:
-            card_token = data["cardToken"]
-        if "threeDSessionId" in data:
-            threed_session_id = data["threeDSessionId"]
+        card_id = data["cardId"] if "cardId" in data else None
+        card_token = data["cardToken"] if "cardToken" in data else None
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
 
         if data["isMarketPlace"] == 'true':
             response, ref_no = provision_soap_client.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
@@ -56,28 +43,16 @@ def provision(request):
 def get_cards_for_payment(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        active_tabs = {
-            "provision": "active show",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": ""
-        }
         response = provision_soap_client.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
+        return render(request, 'payment_soap_index.html', {"tabs":  util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
 
 
 def inquire_provision(request):
     if request.method == 'GET':
         msisdn = request.GET.get("msisdn", "")
         ref_no = request.GET.get("referenceNumber", "")
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "active show",
-            "reconciliation": "",
-            "history": ""
-        }
         response = provision_soap_client.inquire_provision(msisdn, ref_no, util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "inquireResponse": response})
+        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response})
 
 
 def reverse_provision(request):
@@ -97,13 +72,8 @@ def refund_provision(request):
 def get_threed_session_id(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        card_token = None
-        card_id = None
-
-        if "cardId" in data and data["cardId"] != "":
-            card_id = data["cardId"]
-        elif "cardToken" in data:
-            card_token = data["cardToken"]
+        card_id = data["cardId"] if "cardId" in data and data["cardId"] != "" else None
+        card_token = data["cardToken"] if "cardToken" in data else None
 
         threed_session_response = provision_soap_client.get_threed_session_id(data["msisdn"], data["amount"], card_id, card_token, util.get_client_ip(request))
         threed_session_id = threed_session_response["threeDSessionId"]
@@ -123,28 +93,16 @@ def get_threed_session_result(request):
 
 def summary_reconcile(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "active show",
-            "history": ""
-        }
+
         data = request.POST.dict()
         response = provision_soap_client.get_summary_reconcile(data["reconciliationDate"], data["totalRefundAmount"],
                                                            data["totalRefundCount"], data["totalReverseAmount"],
                                                            data["totalReverseCount"], data["totalSaleAmount"],
                                                            data["totalSaleCount"], util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "reconcileRequest": data, "reconcileResponse": response})
+        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("reconciliation"), "reconcileRequest": data, "reconcileResponse": response})
 
 def get_history(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": "active show"
-
-        }
         data = request.POST.dict()
         partition_number = 0
 
@@ -153,23 +111,16 @@ def get_history(request):
 
         if "nextPartitionNumber" in data:
             if data["nextPartitionNumber"] == 'None':
-                return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "historyResponse": {"transactionList": [{"transactionId": "End of history"}]}, "reconcileDate": data["reconcileDate"]})
+                return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": {"transactionList": [{"transactionId": "End of history"}]}, "reconcileDate": data["reconcileDate"]})
             elif data["nextPartitionNumber"] != "":
                 partition_number = data["nextPartitionNumber"]
 
         response = provision_soap_client.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "historyResponse": response, "reconcileDate": data["reconcileDate"]})
+        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": response, "reconcileDate": data["reconcileDate"]})
 
 
 def get_all_history(request):
     if request.method == 'POST':
-        active_tabs = {
-            "provision": "",
-            "provisionDetails": "",
-            "reconciliation": "",
-            "history": "active show"
-
-        }
         data = request.POST.dict()
         partition_number = 0
         transaction_list = []
@@ -179,6 +130,6 @@ def get_all_history(request):
             if response["transactionList"] is not None:
                 transaction_list.extend(response["transactionList"])
             response = provision_soap_client.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": active_tabs, "historyResponse": {"transactionList": transaction_list}, "reconcileDate": data["reconcileDate"]})
+        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": {"transactionList": transaction_list}, "reconcileDate": data["reconcileDate"]})
 
 
