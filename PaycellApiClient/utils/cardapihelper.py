@@ -36,6 +36,7 @@ def create_register_card_request(alias, msisdn,card_token, eula_id, is_default, 
         "threeDSessionId": threed_session_id
     }
 
+
 def create_delete_card_request(msisdn, card_id, client_ip):
     return {
         "requestHeader": create_request_header(client_ip),
@@ -43,3 +44,15 @@ def create_delete_card_request(msisdn, card_id, client_ip):
         "msisdn": msisdn,
     }
 
+
+def create_update_card_request(msisdn, card_id, alias, is_default, eula_id, threed_session_id, client_ip):
+    default = None if is_default == 'false' or not is_default else is_default
+    return {
+        "requestHeader": create_request_header(client_ip),
+        "alias": alias,
+        "cardId": card_id,
+        "eulaId": eula_id,
+        "isDefault": default,
+        "msisdn": msisdn,
+        "threeDSessionId": threed_session_id
+    }

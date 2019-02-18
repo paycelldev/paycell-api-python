@@ -30,8 +30,15 @@ def register_card(request):
     if request.method == 'POST':
         data = request.POST.dict()
         threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
-        print(data, "\n", threed_session_id)
         response = cardapiservice.register_card(data["alias"], data["msisdn"], data["cardToken"], data["eulaId"], data["isDefault"], threed_session_id, util.get_client_ip(request))
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+
+def update_card(request):
+    if request.method == 'POST':
+        data = request.POST.dict()
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
+        response = cardapiservice.update_card(data["msisdn"], data["cardId"], data["alias"], data["isDefault"],  data["eulaId"], threed_session_id, util.get_client_ip(request))
         return HttpResponse(json.dumps(response), content_type='application/json')
 
 

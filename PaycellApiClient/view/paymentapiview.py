@@ -15,6 +15,11 @@ def index(request):
     return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provision")})
 
 
+# This view handles gets information from frontend and makes the provision api call
+# if the customer uses a stored card the cardId parameter has a value
+# if the customer uses a custom card the cardToken parameter has a value
+# if the transaction is 3d secure threeDSessionId value has value
+# if the isMarketPlace checkbox is selected on the frontend it makes a call to marketplace provision api
 def provision(request):
     if request.method == 'POST':
         data = request.POST.dict()
@@ -23,9 +28,9 @@ def provision(request):
         threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
 
         if data["isMarketPlace"] == 'true':
-            response, ref_no = paymentapiservice.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
+            response, ref_no = paymentapiservice.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["installmentCount"], data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
         else:
-            response, ref_no = paymentapiservice.make_provision(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"], threed_session_id, util.get_client_ip(request))
+            response, ref_no = paymentapiservice.make_provision(card_id, card_token, data["msisdn"], data["amount"], data["installmentCount"], data["currency"], data["paymentType"], threed_session_id, util.get_client_ip(request))
 
         response["refNo"] = ref_no
         response["threeDSessionId"] = threed_session_id
@@ -36,7 +41,7 @@ def get_cards_for_payment(request):
     if request.method == 'POST':
         data = request.POST.dict()
         response = cardapiservice.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"], "installmentCount": data["installmentCount"]})
 
 
 #   Waits for msisdn and referenceNumber as url parameters
@@ -45,7 +50,7 @@ def inquire_provision(request):
         msisdn = request.GET.get("msisdn", "")
         ref_no = request.GET.get("referenceNumber", "")
         response = paymentapiservice.inquire_provision(msisdn, ref_no, util.get_client_ip(request))
-        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response})
+        return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response, "referenceId": ref_no})
 
 
 def reverse_provision(request):
@@ -65,12 +70,10 @@ def refund_provision(request):
 def get_threed_session_id(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        print("threed_session data: ", data)
         card_id = data["cardId"] if "cardId" in data and data["cardId"] != "" else None
         card_token = data["cardToken"] if "cardToken" in data else None
 
         threed_session_response = paymentapiservice.get_threed_session_id(data["msisdn"], data["amount"], card_id, card_token, util.get_client_ip(request))
-        print("threed_session_response: ", threed_session_response)
         threed_session_id = threed_session_response["threeDSessionId"]
         return HttpResponse(json.dumps({"threeDSessionId": threed_session_id}), content_type='application/json')
 
@@ -139,4 +142,4 @@ def get_all_history(request):
 @csrf_exempt
 def get_terms_of_service(request):
     response = paymentapiservice.get_terms_of_service(util.get_client_ip(request))
-    return HttpResponse(response["termsOfServiceHtmlContentTR"], content_type='text/html; charset=utf-8')
+    return render(request, 'termofservice.html', {"turkish_content": response["termsOfServiceHtmlContentTR"], "english_content": response["termsOfServiceHtmlContentEN"]} )

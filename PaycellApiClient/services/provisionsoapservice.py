@@ -24,8 +24,12 @@ class ProvisionSoapClient(object):
         request = cardapihelper.create_delete_card_request(msisdn, card_id, client_ip)
         return self.client.service.deleteCard(**request)
 
-    def make_provision(self, card_id, card_token, msisdn, amount, currency,  payment_type, threed_session_id, client_ip):
-        request = paymentapihelper.create_provision_request(card_id, card_token, msisdn, amount, currency, payment_type, threed_session_id, client_ip)
+    def update_card(self, msisdn, card_id, alias, is_default, eula_id, threed_session_id, client_ip):
+        request = cardapihelper.create_update_card_request(msisdn, card_id, alias, is_default, eula_id, threed_session_id, client_ip)
+        return self.client.service.updateCard(**request)
+
+    def make_provision(self, card_id, card_token, msisdn, amount, installment_count, currency,  payment_type, threed_session_id, client_ip):
+        request = paymentapihelper.create_provision_request(card_id, card_token, msisdn, amount, installment_count, currency, payment_type, threed_session_id, client_ip)
         return self.client.service.provision(**request), request["referenceNumber"]
 
     def inquire_provision(self, msisdn, reference_number, client_ip):
@@ -52,8 +56,8 @@ class ProvisionSoapClient(object):
         request = paymentapihelper.create_threed_session_result_request(msisdn, session_id, client_ip)
         return self.client.service.getThreeDSessionResult(**request)
 
-    def make_provision_marketplace(self, card_id, card_token, msisdn, amount, currency,  payment_type, threed_session_id, client_ip):
-        request = paymentapihelper.create_provision_request(card_id, card_token, msisdn, amount, currency, payment_type, threed_session_id, client_ip)
+    def make_provision_marketplace(self, card_id, card_token, msisdn, amount, installment_count, currency,  payment_type, threed_session_id, client_ip):
+        request = paymentapihelper.create_provision_request(card_id, card_token, msisdn, amount, installment_count, currency, payment_type, threed_session_id, client_ip)
         return self.client.service.provisionForMarketPlace(**request), request["referenceNumber"]
 
     def get_history(self, reconciliation_date, partition_no, client_ip):

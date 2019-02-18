@@ -31,9 +31,9 @@ def provision(request):
         threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
 
         if data["isMarketPlace"] == 'true':
-            response, ref_no = provision_soap_client.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
+            response, ref_no = provision_soap_client.make_provision_marketplace(card_id, card_token, data["msisdn"], data["amount"], data["installmentCount"],  data["currency"], data["paymentType"],threed_session_id, util.get_client_ip(request))
         else:
-            response, ref_no = provision_soap_client.make_provision(card_id, card_token, data["msisdn"], data["amount"], data["currency"], data["paymentType"], threed_session_id, util.get_client_ip(request))
+            response, ref_no = provision_soap_client.make_provision(card_id, card_token, data["msisdn"], data["amount"], data["installmentCount"], data["currency"], data["paymentType"], threed_session_id, util.get_client_ip(request))
 
         response["refNo"] = ref_no
         response["threeDSessionId"] = threed_session_id
@@ -44,15 +44,14 @@ def get_cards_for_payment(request):
     if request.method == 'POST':
         data = request.POST.dict()
         response = provision_soap_client.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs":  util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"]})
-
+        return render(request, 'payment_soap_index.html', {"tabs":  util.select_active_provision_tab("provision"), "getCardResponse": response, "msisdn": data["msisdn"], "amount": data["amount"], "currency": data["currency"], "installmentCount": data["installmentCount"]})
 
 def inquire_provision(request):
     if request.method == 'GET':
         msisdn = request.GET.get("msisdn", "")
         ref_no = request.GET.get("referenceNumber", "")
         response = provision_soap_client.inquire_provision(msisdn, ref_no, util.get_client_ip(request))
-        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response})
+        return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("provisionDetails"), "inquireResponse": response, "referenceId": ref_no})
 
 
 def reverse_provision(request):
@@ -124,12 +123,14 @@ def get_all_history(request):
         data = request.POST.dict()
         partition_number = 0
         transaction_list = []
-        response = provision_soap_client.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
-        while partition_number != "" and partition_number is not None:
-            partition_number = response["nextPartitionNo"]
-            if response["transactionList"] is not None:
-                transaction_list.extend(response["transactionList"])
+        while True:
             response = provision_soap_client.get_history(data["reconcileDate"], partition_number, util.get_client_ip(request))
+            partition_number = response["nextPartitionNo"]
+            if response["transactionList"]:
+                transaction_list.extend(response["transactionList"])
+
+            if not partition_number:
+                break
         return render(request, 'payment_soap_index.html', {"tabs": util.select_active_provision_tab("history"), "historyResponse": {"transactionList": transaction_list}, "reconcileDate": data["reconcileDate"]})
 
 

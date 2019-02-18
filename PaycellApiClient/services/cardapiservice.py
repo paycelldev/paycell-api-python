@@ -20,6 +20,12 @@ def register_card(alias, msisdn, card_token, eula_id, is_default, threed_session
     return response.json()
 
 
+def update_card(msisdn, cardId, alias, is_default, eula_id, threed_session_id, client_ip):
+    request = cardapihelper.create_update_card_request(msisdn, cardId, alias, is_default, eula_id, threed_session_id, client_ip)
+    response = restclient.make_post_request(constants.URL_UPDATE_CARD, request, {'content-type': 'application/json'})
+    return response.json()
+
+
 def delete_card(msisdn, card_id, client_ip):
     request = cardapihelper.create_delete_card_request(msisdn, card_id, client_ip)
     response = restclient.make_post_request(constants.URL_DELETE_CARD, request, {'content-type': 'application/json'})
