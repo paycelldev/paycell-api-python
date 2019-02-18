@@ -76,6 +76,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="installmentCount" class="bmd-label-floating">installmentCount</label>
+                        <input name="installmentCount" type="text" class="form-control" id="installmentCount" placeholder="0"
+                               value="{{installmentCount}}">
+                    </div>
+
+                    <div class="form-group">
                         <label class="checkbox-inline"><input id="isThreeDSecure" name="isThreeDSecure" type="checkbox" value="">isThreeDSecure</label>
                         <label class="checkbox-inline"><input id="isMarketPlace" name="isMarketPlace" type="checkbox" value="">isMarketPlaceProvision</label>
                     </div>
@@ -114,15 +120,15 @@
                             </div>
                             <div class="col-2">
                                 <label for="customCardExpireMonth">expireMonth</label>
-                                <input type="text" class="form-control" id="customCardExpireMonth" placeholder="12">
+                                <input type="text" class="form-control" id="customCardExpireMonth" placeholder="12" maxlength="2" minlength="2">
                             </div>
                             <div class="col-2">
                                 <label for="customCardExpireYear">expireYear</label>
-                                <input type="text" class="form-control" id="customCardExpireYear" placeholder="18">
+                                <input type="text" class="form-control" id="customCardExpireYear" placeholder="18" maxlength="2" minlength="2">
                             </div>
                             <div class="col-2">
                                 <label for="customCardCvc">Cvc</label>
-                                <input type="text" class="form-control" id="customCardCvc" placeholder="212">
+                                <input type="text" class="form-control" id="customCardCvc" placeholder="212" maxlength="3">
                             </div>
                             <div class="col-2">
                                 <button type="button" class="btn btn-primary" onclick="payWithCustomCard();"
@@ -148,9 +154,13 @@
                         {% for card in getCardResponse.cardList %}
                         <li class="list-group-item">
                             <div class="row">
-                                <div class="col-2">
+                                <div class="col-1">
                                     <label for="cardId"><b>CardId</b></label>
                                     <p id="cardId">{{ card.cardId }}</p>
+                                </div>
+                                <div class="col-1" hidden="true">
+                                    <label for="showEulaId"><b>showEulaId</b></label>
+                                    <p id="showEulaId">{{ card.showEulaId }}</p>
                                 </div>
                                 <div class="col-2">
                                     <label for="cardMsisdn"><b>MaskedCardNo</b></label>
@@ -199,6 +209,14 @@
             <div id="provision-detail">
                 {% if inquireResponse %}
                 <div id="provision">
+                    <div class="col-6">
+                        <label for="provisionType"><b>Order ID</b></label>
+                        <p id="provisionOrderId">{{ inquireResponse.orderId }}</p>
+                    </div>
+                    <div class="col-6">
+                        <label for="provisionRefId"><b>Reference Id</b></label>
+                        <p id="provisionRefId">{{ referenceId}}</p>
+                    </div>
                     <ul style="margin-left:0; padding-left: 0;">
                         {% for provision in inquireResponse.provisionList %}
                         <li class="list-group-item">
@@ -220,6 +238,7 @@
                                     <p id="provisionDateTime">{{ provision.dateTime }}</p>
                                 </div>
 
+                                {% if provision.provisionType == 'SALE' %}
                                 <div class="col-1">
                                     <button type="button" class="btn btn-primary" style='margin-top:2em'
                                             onclick="reverseProvision(this);"> REVERSE
@@ -234,6 +253,7 @@
                                             onclick="refundProvision(this);"> REFUND
                                     </button>
                                 </div>
+                                {% endif %}
                             </div>
                         </li>
                         {% endfor %}
@@ -360,7 +380,8 @@
             <form class="form-group" action="/paycellapiclient/history/" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <h4>Reconciliation Clientside:</h4>
+                    <br/>
+                    <h4>History:</h4>
                     <div class="row" style="padding-top:2em;">
                         <div class="col-8">
                             <label for="historyDate">History Date</label>

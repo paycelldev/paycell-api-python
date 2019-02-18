@@ -65,7 +65,6 @@ var makeRegisterCardCall = function(alias, cardToken, eulaId, isDefault, msisdn,
     this may lead to call add card service several times, when the callback url is called this will not be a problem
 */
 var getThreeDSessionIdForAddCard = function(msisdn, cardToken, alias, isDefault, eulaId){
-    var count = 0;
 
     request = $.ajax({
         url: "/paycellapiclient/soap/threedsessionid/",
@@ -103,7 +102,6 @@ var checkThreeDSessionResultForAddCard = function(msisdn, threeDSessionId, cardT
                 "threeDSessionId": threeDSessionId
               },
         success: function(input) {
-            console.log(input);
             if (input.threeDOperationResult && input.threeDOperationResult.threeDResult == '0') {
                 makeRegisterCardCall(alias, cardToken, eulaId, isDefault, msisdn, threeDSessionId);
                 clearInterval(timer);
@@ -155,7 +153,17 @@ function addCard() {
                  "transactionId": transactionId
               },
         success: function(input) {
-            getToken(transactionId, transactionDateTime, input.hashValue);
+            var termsofservicePopup = window.open("/paycellapiclient/termsofservice/", "termsofservice",'height=800,width=600');
+            var timer = setInterval(function() {
+                if (termsofservicePopup.isConfirm) {
+                   getToken(transactionId, transactionDateTime, input.hashValue);
+                   clearInterval(timer);
+                }
+
+                if (termsofservicePopup.isCancel) {
+                   clearInterval(timer);
+                }
+            }, 1000);
         },
     });
 }
@@ -175,7 +183,6 @@ function removeCard(el) {
                 "cardId": cardId
               },
         success: function(input) {
-            console.log(input);
             alert("Remove card result: \n\n\n" + input.responseDescription);
         },
     });
@@ -186,8 +193,8 @@ function payWithStoredCard(el) {
     var transactionDateTime = generateTransactionDateTime();
     var cardId = $(el).parents("div.row").children().find("p#cardId").text();
     var expireMonth = $(el).parents("div.row").children().find("#storedCardExpireMonth").val();
-    var expireYear =$(el).parents("div.row").children().find("#storedCardExpireYear").val();
-    var cvc =$(el).parents("div.row").children().find("#storedCardCvc").val();
+    var expireYear = $(el).parents("div.row").children().find("#storedCardExpireYear").val();
+    var cvc = $(el).parents("div.row").children().find("#storedCardCvc").val();
 
     //if there is extra fields
     if (expireYear || expireMonth || cvc) {
@@ -208,8 +215,11 @@ function payWithStoredCard(el) {
     }
 }
 
-
-var checkThreeDSessionResult = function(msisdn, threeDSessionId, amount, cardId, cardToken, timer){
+/*
+    This method is checks for the result of 3d session and when the result is successful
+    calls the provision service to complete the transaction
+*/
+var checkThreeDSessionResultForProvision = function(msisdn, threeDSessionId, amount, cardId, cardToken, isMarketPlace, timer){
     request = $.ajax({
         url: "/paycellapiclient/soap/threedsessionresult/",
         type: "POST",
@@ -219,16 +229,21 @@ var checkThreeDSessionResult = function(msisdn, threeDSessionId, amount, cardId,
                 "threeDSessionId": threeDSessionId
               },
         success: function(input) {
-            console.log(input);
             if (input.threeDOperationResult && input.threeDOperationResult.threeDResult == '0') {
-                makeProvisionServiceCall(cardToken, cardId, msisdn, threeDSessionId);
+                makeProvisionServiceCall(cardToken, cardId, msisdn, isMarketPlace, threeDSessionId);
                 clearInterval(timer);
             }
         }
     });
 }
-
-var getThreeDSessionId = function(msisdn, amount, cardId, cardToken){
+/*
+    This method makes a call to get three d session
+    After getting the id and opens a new tab for three d session
+    Since this application works on local, after the session is started callback url is not called
+    Because of this reason, this method checks for 3d session result every 5 seconds,
+    this may lead to call provision service several times, when the callback url is called this will not be a problem
+*/
+var getThreeDSessionIdForProvision = function(msisdn, amount, cardId, cardToken, isMarketPlace){
     var count = 0;
 
     request = $.ajax({
@@ -248,7 +263,8 @@ var getThreeDSessionId = function(msisdn, amount, cardId, cardToken){
 
             //Check every second for 30 seconds.
             var timer = setInterval(function() {
-                checkThreeDSessionResult(msisdn, input.threeDSessionId, amount, cardId, cardToken, timer);
+                //Check for the session result
+                checkThreeDSessionResultForProvision(msisdn, input.threeDSessionId, amount, cardId, cardToken, isMarketPlace, timer);
             }, 5000);
         }
     });
@@ -262,13 +278,17 @@ var makeProvisionCall = function(token, cardId, threeDSessionId) {
     var isMarketPlace = $("#isMarketPlace").is(':checked');
 
     if (isThreeDSecure) {
-        getThreeDSessionId(msisdn, $("#amount").val(), cardId, token);
+        getThreeDSessionIdForProvision(msisdn, $("#amount").val(), cardId, token, isMarketPlace);
     } else {
         makeProvisionServiceCall(token, cardId, msisdn, isMarketPlace, threeDSessionId);
     }
 }
 
-var makeProvisionServiceCall = function(token,cardId, msisdn, isMarketPlace, threeDSessionId) {
+/*
+    This function is the final call to make provision
+    After the pre-requirements are done, this function is called with params
+*/
+var makeProvisionServiceCall = function(token, cardId, msisdn, isMarketPlace, threeDSessionId) {
         request = $.ajax({
             url: "/paycellapiclient/soap/provision/",
             type: "POST",
@@ -282,6 +302,7 @@ var makeProvisionServiceCall = function(token,cardId, msisdn, isMarketPlace, thr
                     "threeDSecureId" : threeDSessionId,
                     "isMarketPlace" : isMarketPlace,
                     "amount": $("#amount").val(),
+                    "installmentCount": $("#installmentCount").val(),
                     "paymentType" : $("#paymentType").val()
                   },
             success: function(input) {
@@ -309,7 +330,12 @@ function payWithCustomCard() {
             var expMonth = $("#customCardExpireMonth").val();
             var expYear =  $("#customCardExpireYear").val();
             var cvc =  $("#customCardCvc").val();
-            getCardTokenForProvision(transactionId, transactionDateTime, cardNo, null, expMonth, expYear, cvc, input.hashValue, makeProvisionCall);
+
+            if (expMonth.length != 2 || expYear.length != 2 || cvc.length != 3){
+                alert("Expire Dates must be 2, cvc must be 3 digit number");
+            } else {
+                getCardTokenForProvision(transactionId, transactionDateTime, cardNo, null, expMonth, expYear, cvc, input.hashValue, makeProvisionCall);
+            }
         },
     });
 }
@@ -388,5 +414,121 @@ function refundProvision(el) {
         },
     });
 
+}
 
+function showUpdateFields(el) {
+	var updateFields = $(el).parents("div.card_fields").children("div.updatecard_fields");
+    updateFields.prop("hidden", false);
+}
+
+function updateCard(el){
+    var isThreeDSecure =  $(el).parents("div.row").children().find('#updatecard_isThreed').is(':checked');
+    var alias =  $(el).parents("div.row").children().find("#updatecard_alias").val();
+    var eulaId =  $(el).parents("div.row").children().find("#updatecard_eulaId").val();
+    var isDefault =  $(el).parents("div.row").children().find('#updatecard_isDefault').is(':checked');
+    var msisdn =  $("#getCardMsisdn").val();
+    var showEulaId = $(el).parents("div.row").children().find('#updatecard_showEulaId').val();
+    var cardId =  $(el).parents("div.row").children().find("#updatecard_cardId").val();
+
+    if (showEulaId == 'True') {
+           var termsofservicePopup = window.open("/paycellapiclient/termsofservice/", "termsofservice",'height=800,width=600');
+            var timer = setInterval(function() {
+                if (termsofservicePopup.isConfirm) {
+                    clearInterval(timer);
+
+                    if (isThreeDSecure) {
+                        getThreeDSessionIdForUpdateCard(msisdn, cardId, alias, isDefault, eulaId);
+                    } else {
+                        makeUpdateCardCall(msisdn, alias, cardId, eulaId, isDefault, null);
+                    }
+                }
+
+                if (termsofservicePopup.isCancel) {
+                    clearInterval(timer);
+                }
+            }, 1000);
+    } else {
+        if (isThreeDSecure) {
+            getThreeDSessionIdForUpdateCard(msisdn, cardId, alias, isDefault, eulaId);
+        } else {
+            makeUpdateCardCall(msisdn, alias, cardId, eulaId, isDefault, null);
+        }
+    }
+}
+
+
+function makeUpdateCardCall(msisdn, alias, cardId, eulaId, isDefault, threeDSecureId) {
+
+    request = $.ajax({
+        url: "/paycellapiclient/soap/updatecard/",
+        type: "POST",
+        dataType: 'json',
+        data: {
+                "csrfmiddlewaretoken" : $("[name='csrfmiddlewaretoken']").val(),
+                "msisdn": msisdn,
+                "cardId": cardId,
+                "alias" : alias,
+                "eulaId" :  eulaId,
+                "isDefault": isDefault,
+                "threeDSecureId": threeDSecureId
+              },
+        success: function(input) {
+            alert("Update card result: \n\n\n" + JSON.stringify(input));
+
+        },
+    });
+}
+
+
+/*
+    This method makes a call to get three d session
+    After getting the id and opens a new tab for three d session
+    Since this application works on local, after the session is started callback url is not called
+    Because of this reason, this method checks for 3d session result every 5 seconds,
+    this may lead to call add card service several times, when the callback url is called this will not be a problem
+*/
+function getThreeDSessionIdForUpdateCard(msisdn, cardId, alias, isDefault, eulaId){
+
+    request = $.ajax({
+        url: "/paycellapiclient/soap/threedsessionid/",
+        type: "POST",
+        dataType: 'json',
+        data: {
+                "csrfmiddlewaretoken" : $("[name='csrfmiddlewaretoken']").val(),
+                "msisdn": msisdn,
+                "amount": 1,
+                "cardId": cardId
+              },
+        success: function(input) {
+            var threedPage = "/paycellapiclient/showthreedpage/" + input.threeDSessionId;
+            window.open(threedPage);
+
+            //Check every second for 30 seconds.
+            var timer = setInterval(function() {
+                //Check for the session result
+                checkThreeDSessionResultForUpdateCard(msisdn, input.threeDSessionId, cardId, alias, isDefault, eulaId, timer);
+            }, 5000);
+        }
+    });
+}
+/*
+    This method is checks for the result of 3d session and when the result is successful
+    calls the addcard service to complete the add card process
+*/
+var checkThreeDSessionResultForUpdateCard = function(msisdn, threeDSessionId, cardId, alias, isDefault, eulaId, timer){
+    request = $.ajax({
+        url: "/paycellapiclient/soap/threedsessionresult/",
+        type: "POST",
+        dataType: 'json',
+        data: {
+                "msisdn": msisdn,
+                "threeDSessionId": threeDSessionId
+              },
+        success: function(input) {
+            if (input.threeDOperationResult && input.threeDOperationResult.threeDResult == '0') {
+                makeUpdateCardCall(msisdn, alias, cardId, eulaId, isDefault, threeDSessionId)
+                clearInterval(timer);
+            }
+        }
+    });
 }

@@ -24,99 +24,100 @@
 
 </head>
 <body>
-    <div class="container">
-        <br/>
-        <br/>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link {{tabs.addCard}}" id="addCard-tab" data-toggle="tab" href="#addCardContainer" role="tab" aria-controls="addCardContainer"
-                   aria-selected="true">AddCard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{tabs.getCards}}" id="getCards-tab" data-toggle="tab" href="#getCardsContainer" role="tab" aria-controls="getCardsContainer"
-                   aria-selected="false">GetCards</a>
-            </li>
-        </ul>
+<div class="container">
+    <br/>
+    <br/>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {{tabs.addCard}}" id="addCard-tab" data-toggle="tab" href="#addCardContainer" role="tab" aria-controls="addCardContainer"
+               aria-selected="true">AddCard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{tabs.getCards}}" id="getCards-tab" data-toggle="tab" href="#getCardsContainer" role="tab" aria-controls="getCardsContainer"
+               aria-selected="false">GetCards</a>
+        </li>
+    </ul>
 
-        <div class="tab-content" id="myTabContent">
-            <!-- Add Card Tab -->
-            <div class="tab-pane fade {{tabs.addCard}}" id="addCardContainer" role="tabpanel" aria-labelledby="addCard-tab">
-                <!--  Credit Card Input -->
-                <div id="creditCardInfo" style="padding-top:2em;">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-4">
-                                <label for="addCardMsisdn">Msisdn</label>
-                                <input type="text" class="form-control" id="addCardMsisdn" placeholder="905322870886">
-                            </div>
-                            <div class="col-4">
-                                <label for="addCardAlias">Alias</label>
-                                <input type="text" class="form-control" id="addCardAlias" placeholder="Alias">
-                            </div>
-                            <div class="col-4">
-                                <label for="addCardEula">EulaId</label>
-                                <input type="text" class="form-control" id="addCardEula" placeholder="17">
-                            </div>
+    <div class="tab-content" id="myTabContent">
+        <!-- Add Card Tab -->
+        <div class="tab-pane fade {{tabs.addCard}}" id="addCardContainer" role="tabpanel" aria-labelledby="addCard-tab">
+            <!--  Credit Card Input -->
+            <div id="creditCardInfo" style="padding-top:2em;">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="addCardMsisdn">Msisdn</label>
+                            <input type="text" class="form-control" id="addCardMsisdn" placeholder="905322870886">
                         </div>
-                        <div class="row" style="padding-top:2em;">
-                            <div class="col-2">
-                                <label for="addCardNo">cardNo</label>
-                                <input type="text" class="form-control" id="addCardNo" placeholder="4355084355084358">
-                            </div>
-                            <div class="col-1">
-                                <label for="addCardExpireMonth">expireMonth</label>
-                                <input type="text" class="form-control" id="addCardExpireMonth" placeholder="12">
-                            </div>
-                            <div class="col-1">
-                                <label for="addCardExpireYear">expireYear</label>
-                                <input type="text" class="form-control" id="addCardExpireYear" placeholder="18">
-                            </div>
-                            <div class="col-2">
-                                <label for="addCardCvc">Cvc</label>
-                                <input type="text" class="form-control" id="addCardCvc" placeholder="212">
-                            </div>
-                            <div class="col-2">
-                                  <label class="checkbox-inline"><input type="checkbox" value="" id="addCardIsDefault" style='margin-top:2em'>isDefault</label>
-                            </div>
-                            <div class="col-2">
-                                  <label class="checkbox-inline"><input type="checkbox" value="" id="addCardIsThreed" style='margin-top:2em'>isThreedSecure</label>
-                            </div>
-                            <div class="col-2">
-                                <button type="button" class="btn btn-primary" onclick="addCard();" style='margin-top:2em'>AddCard</button>
-                            </div>
+                        <div class="col-4">
+                            <label for="addCardAlias">Alias</label>
+                            <input type="text" class="form-control" id="addCardAlias" placeholder="Alias">
+                        </div>
+                        <div class="col-4">
+                            <label for="addCardEula">EulaId</label>
+                            <input type="text" class="form-control" id="addCardEula" placeholder="17">
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:2em;">
+                        <div class="col-2">
+                            <label for="addCardNo">cardNo</label>
+                            <input type="text" class="form-control" id="addCardNo" placeholder="4355084355084358">
+                        </div>
+                        <div class="col-1">
+                            <label for="addCardExpireMonth">expireMonth</label>
+                            <input type="text" class="form-control" id="addCardExpireMonth" placeholder="12">
+                        </div>
+                        <div class="col-1">
+                            <label for="addCardExpireYear">expireYear</label>
+                            <input type="text" class="form-control" id="addCardExpireYear" placeholder="18">
+                        </div>
+                        <div class="col-2">
+                            <label for="addCardCvc">Cvc</label>
+                            <input type="text" class="form-control" id="addCardCvc" placeholder="212">
+                        </div>
+                        <div class="col-2">
+                            <label class="checkbox-inline"><input type="checkbox" value="" id="addCardIsDefault" style='margin-top:2em'>isDefault</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="checkbox-inline"><input type="checkbox" value="" id="addCardIsThreed" style='margin-top:2em'>isThreedSecure</label>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-primary" onclick="addCard();" style='margin-top:2em'>AddCard</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!--  Get cards tab -->
-            <div class="tab-pane fade {{tabs.getCards}}" id="getCardsContainer" role="tabpanel" aria-labelledby="getCards-tab">
-                <form action="/paycellapiclient/getcards/" method="post">
-                    {% csrf_token %}
-                    <div>
-                        <div class="row">
-                            <div class="col-2">
-                                <label for="getCardsMsisdn">Msisdn</label>
-                                <input type="text" name="msisdn" class="form-control" id="getCardsMsisdn"
-                                       placeholder="5380521479" required="true">
-                            </div>
-                            <div class="col-2">
-                                <button type="submit" class="btn btn-primary" style='margin-top:2em'> getCards </button>
-                            </div>
+        <!--  Get cards tab -->
+        <div class="tab-pane fade {{tabs.getCards}}" id="getCardsContainer" role="tabpanel" aria-labelledby="getCards-tab">
+            <form action="/paycellapiclient/getcards/" method="post">
+                {% csrf_token %}
+                <div>
+                    <div class="row">
+                        <div class="col-2">
+                            <label for="getCardsMsisdn">Msisdn</label>
+                            <input type="text" name="msisdn" class="form-control" id="getCardsMsisdn"
+                                   placeholder="5380521479" required="true">
+                        </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-primary" style='margin-top:2em'> getCards</button>
                         </div>
                     </div>
-                    {% if getCardResponse %}
-                    <div id="cardList">
-                        <input type="hidden" id="getCardMsisdn" name="msisdn" value={{msisdn}}>
-                        <br/>
-                        <br/>
-                        Saved Cards:
-                        <br/>
-                        <ul style="margin-left:0; padding-left: 0;">
-                            {% for card in getCardResponse.cardList %}
-                            <li class="list-group-item">
+                </div>
+                {% if getCardResponse %}
+                <div id="cardList">
+                    <input type="hidden" id="getCardMsisdn" name="msisdn" value={{msisdn}}>
+                    <br/>
+                    <br/>
+                    Saved Cards:
+                    <br/>
+                    <ul style="margin-left:0; padding-left: 0;">
+                        {% for card in getCardResponse.cardList %}
+                        <li class="list-group-item">
+                            <div class="card_fields">
                                 <div class="row">
-                                    <div class="col-2">
+                                    <div class="col-1">
                                         <label for="cardId"><b>CardId</b></label>
                                         <p id="cardId">{{ card.cardId }}</p>
                                     </div>
@@ -132,26 +133,63 @@
                                         <label for="cardBrand"><b>Brand</b></label>
                                         <p id="cardBrand">{{ card.cardBrand }}</p>
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-1">
                                         <label for="cardIsDefault"><b>isDefault</b></label>
                                         <p id="cardIsDefault">{{ card.isDefault }}</p>
+                                    </div>
+                                    <div class="col-1">
+                                        <label for="cardShowEulaId"><b>showEulaId</b></label>
+                                        <p id="cardShowEulaId">{{ card.showEulaId }}</p>
                                     </div>
                                     <div class="col-1">
                                         <label for="cardIsExpired"><b>isExpired</b></label>
                                         <p id="cardIsExpired">{{ card.isExpired }}</p>
                                     </div>
                                     <div class="col-1">
-                                       <button type="button" class="btn btn-primary" style='margin-top:2em' onclick="removeCard(this);"> Remove </button>
+                                        <button type="button" class="btn btn-primary" style='margin-top:2em' onclick="showUpdateFields(this);"> Update</button>
+                                    </div>
+                                    <div class="col-1">
+                                        <button type="button" class="btn btn-primary" style='margin-top:2em' onclick="removeCard(this);"> Remove</button>
                                     </div>
                                 </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                </form>
-            </div>
+
+                                <div class="updatecard_fields" hidden="true">
+                                    <div class="row" style="background-color:lightgrey">
+                                        <div class="col-3">
+                                            <label for="updatecard_alias"><b>Alias</b></label>
+                                            <input type="text" class="form-control" id="updatecard_alias" placeholder="{{ card.alias }}">
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="updatecard_eulaId"><b>EulaId</b></label>
+                                            <input type="text" class="form-control" id="updatecard_eulaId">
+                                        </div>
+                                        <div class="col-2">
+                                            <label class="checkbox-inline"><input type="checkbox" value="{{ card.isDefault }}" id="updatecard_isDefault"
+                                                                                  style='margin-top:2em'>isDefault</label>
+                                        </div>
+                                        <div class="col-2">
+                                            <label class="checkbox-inline"><input type="checkbox" value="" id="updatecard_isThreed" style='margin-top:2em'>isThreedSecure</label>
+                                        </div>
+                                        <div class="col-3" hidden="true">
+                                            <input type="text" class="form-control" id="updatecard_cardId" value="{{ card.cardId }}"/>
+                                            <input type="checkbox" value="{{ card.showEulaId }}" id="updatecard_showEulaId"/>
+                                        </div>
+                                        <div class="col-1 offset-1">
+                                            <button type="button" class="btn btn-primary" style='margin-top:2em' onclick="updateCard(this);"> Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </form>
         </div>
     </div>
+</div>
+
 </body>
 </html>

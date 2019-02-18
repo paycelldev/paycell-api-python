@@ -17,3 +17,23 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def select_active_provision_tab(active_tab):
+    tabs = {
+        "provision": "",
+        "provisionDetails": "",
+        "reconciliation": "",
+        "history": ""
+    }
+    tabs[active_tab] = "active show"
+    return tabs
+
+def select_active_card_tab(active_tab):
+    tabs = {
+        "addCard": "",
+        "getCards": "",
+        "removeCard": ""
+    }
+    tabs[active_tab] = "active show"
+    return tabs

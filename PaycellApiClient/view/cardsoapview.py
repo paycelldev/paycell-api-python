@@ -17,13 +17,8 @@ provision_soap_client = ProvisionSoapClient()
 def get_cards(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        active_tabs = {
-            "addCard": "",
-            "getCards": "active show",
-            "removeCard": ""
-        }
         response = provision_soap_client.get_cards(data["msisdn"], util.get_client_ip(request))
-        return render(request, 'card_soap_index.html', {"tabs": active_tabs, "getCardResponse": response, "msisdn": data["msisdn"]})
+        return render(request, 'card_soap_index.html', {"tabs": util.select_active_card_tab("getCards"), "getCardResponse": response, "msisdn": data["msisdn"]})
 
 
 @csrf_exempt
@@ -38,10 +33,16 @@ def hash_data(request):
 def register_card(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        threed_session_id = None
-        if "threeDSessionId" in data:
-            threed_session_id = data["threeDSessionId"]
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
         response = provision_soap_client.register_card(data["alias"], data["msisdn"], data["cardToken"], data["eulaId"], data["isDefault"], threed_session_id, util.get_client_ip(request))
+        return HttpResponse(json.dumps(serialize_object(response)), content_type='application/json')
+
+
+def update_card(request):
+    if request.method == 'POST':
+        data = request.POST.dict()
+        threed_session_id = data["threeDSecureId"] if "threeDSecureId" in data else None
+        response = provision_soap_client.update_card(data["msisdn"], data["cardId"], data["alias"], data["isDefault"], data["eulaId"], threed_session_id, util.get_client_ip(request))
         return HttpResponse(json.dumps(serialize_object(response)), content_type='application/json')
 
 

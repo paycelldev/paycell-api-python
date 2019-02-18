@@ -17,7 +17,7 @@ def create_request_header(client_ip):
     }
 
 
-def create_provision_request(card_id, card_token, msisdn, amount, currency, payment_type, threed_session_id,  client_ip):
+def create_provision_request(card_id, card_token, msisdn, amount, installment_count, currency, payment_type, threed_session_id,  client_ip):
     header = create_request_header(client_ip)
     return {
         "requestHeader": header,
@@ -27,6 +27,7 @@ def create_provision_request(card_id, card_token, msisdn, amount, currency, paym
         "msisdn": msisdn,
         "referenceNumber": REFENCE_NUMBER_PREFIX + header["transactionDateTime"],
         "amount": amount,
+        "installmentCount" : installment_count,
         "currency": currency,
         "paymentType": payment_type,
         "acquirerBankCode": "111",
@@ -121,6 +122,12 @@ def create_get_history_request(reconciliation_date, partition_no, client_ip):
         "merchantCode": MERCHANT_CODE,
         "partitionNo": partition_no,
         "reconciliationDate": reconciliation_date
+    }
+
+
+def create_get_terms_of_service_request(client_ip):
+    return {
+        "requestHeader": create_request_header(client_ip)
     }
 
 

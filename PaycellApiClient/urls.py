@@ -9,6 +9,7 @@ urlpatterns = [
     path('getcards/', cardapiview.get_cards, name='getcards'),
     path('hashdata/', cardapiview.hash_data, name='hashdata'),
     path('registercard/', cardapiview.register_card, name='registercard'),
+    path('updatecard/', cardapiview.update_card, name='updatecard'),
     path('deletecard/', cardapiview.delete_card, name='deletecard'),
     path('payment/', paymentapiview.index, name='payment_index'),
     path('getcardsforpayment/', paymentapiview.get_cards_for_payment, name='getcardsforpayment'),
@@ -21,12 +22,14 @@ urlpatterns = [
     path('threedsessionresult/', paymentapiview.get_threed_session_result, name='get_threed_session_result'),
     path('summaryreconcile/', paymentapiview.summary_reconcile, name='summary_reconcile'),
     path('history/', paymentapiview.get_history, name='history'),
+    path('termsofservice/', paymentapiview.get_terms_of_service, name="termsofservice"),
 
     #Uses soap clients
     path('soap/', views.soap_index, name='soap_index'),
     path('soap/getcards/', cardsoapview.get_cards, name='soap_getcards'),
     path('soap/hashdata/', cardsoapview.hash_data, name='soap_hashdata'),
     path('soap/registercard/', cardsoapview.register_card, name='soap_registercard'),
+    path('soap/updatecard/', cardsoapview.update_card, name='soap_updatecard'),
     path('soap/deletecard/', cardsoapview.delete_card, name='soap_deletecard'),
     path('soap/payment/', paymentsoapview.index, name='soap_payment_index'),
     path('soap/getcardsforpayment/', paymentsoapview.get_cards_for_payment, name='soap_getcardsforpayment'),
