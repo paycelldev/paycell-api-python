@@ -44,8 +44,16 @@ class ProvisionSoapClient(object):
         request = paymentapihelper.create_refund_provision_request(msisdn, reference_number, amount, client_ip)
         return self.client.service.refund(**request)
 
-    def get_summary_reconcile(self, reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count, client_ip):
-        request = paymentapihelper.create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count, client_ip)
+    def get_summary_reconcile(self, reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count,
+                                                         total_post_auth_amount, total_post_auth_count, total_post_auth_reverse_amount, total_post_auth_reverse_count,
+                                                         total_pre_auth_amount, total_pre_auth_count, total_pre_auth_reverse_amount, total_pre_auth_reverse_count, client_ip):
+
+        request = paymentapihelper.create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount,
+                                                                    total_reverse_count, total_sale_amount, total_sale_count,
+                                                                    total_post_auth_amount, total_post_auth_count, total_post_auth_reverse_amount,
+                                                                    total_post_auth_reverse_count,
+                                                                    total_pre_auth_amount, total_pre_auth_count, total_pre_auth_reverse_amount,
+                                                                    total_pre_auth_reverse_count, client_ip)
         return self.client.service.summaryReconciliation(**request)
 
     def get_threed_session_id(self, msisdn, amount, card_id, card_token, client_ip):

@@ -55,8 +55,13 @@ def get_threed_session_result(msisdn, session_id, client_ip):
     return response.json()
 
 
-def get_summary_reconcile(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count, client_ip):
-    request = paymentapihelper.create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count, client_ip)
+def get_summary_reconcile(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count,
+                          total_post_auth_amount, total_post_auth_count, total_post_auth_reverse_amount, total_post_auth_reverse_count,
+                          total_pre_auth_amount, total_pre_auth_count, total_pre_auth_reverse_amount, total_pre_auth_reverse_count, client_ip):
+
+    request = paymentapihelper.create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count,
+                                                                                     total_post_auth_amount, total_post_auth_count, total_post_auth_reverse_amount, total_post_auth_reverse_count,
+                                                                                     total_pre_auth_amount, total_pre_auth_count, total_pre_auth_reverse_amount, total_pre_auth_reverse_count, client_ip)
     response = restclient.make_post_request(constants.URL_SUMMARY_RECONCILIATION, request, {'content-type': 'application/json'})
     return response.json()
 

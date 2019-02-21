@@ -92,10 +92,14 @@ def get_threed_session_result(request):
 def summary_reconcile(request):
     if request.method == 'POST':
         data = request.POST.dict()
-        response = paymentapiservice.get_summary_reconcile(data["reconciliationDate"], data["totalRefundAmount"],
-                                                           data["totalRefundCount"], data["totalReverseAmount"],
-                                                           data["totalReverseCount"], data["totalSaleAmount"],
-                                                           data["totalSaleCount"], util.get_client_ip(request))
+        response = paymentapiservice.get_summary_reconcile(data["reconciliationDate"], data["totalRefundAmount"], data["totalRefundCount"],
+                                                                                       data["totalReverseAmount"], data["totalReverseCount"],
+                                                                                       data["totalSaleAmount"],   data["totalSaleCount"],
+                                                                                       data["totalPostAuthAmount"], data["totalPostAuthCount"],
+                                                                                       data["totalPostAuthReverseAmount"], data["totalPostAuthReverseCount"],
+                                                                                       data["totalPreAuthAmount"], data["totalPreAuthCount"],
+                                                                                       data["totalPreAuthReverseAmount"], data["totalPreAuthReverseCount"],
+                                                           util.get_client_ip(request))
 
         return render(request, 'payment_api_index.html', {"tabs": util.select_active_provision_tab("reconciliation"), "reconcileRequest": data, "reconcileResponse": response})
 

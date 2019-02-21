@@ -102,7 +102,9 @@ def create_threed_session_result_request(msisdn, session_id, client_ip):
     }
 
 
-def create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count, client_ip):
+def create_summary_reconcile_request(reconciliation_date, total_refund_amount, total_refund_count, total_reverse_amount, total_reverse_count, total_sale_amount, total_sale_count,
+                                     total_post_auth_amount, total_post_auth_count, total_post_auth_reverse_amount, total_post_auth_reverse_count, total_pre_auth_amount, total_pre_auth_count,
+                                     total_pre_auth_reverse_amount, total_pre_auth_reverse_count, client_ip):
     return {
         "requestHeader": create_request_header(client_ip),
         "merchantCode": MERCHANT_CODE,
@@ -112,7 +114,16 @@ def create_summary_reconcile_request(reconciliation_date, total_refund_amount, t
         "totalReverseAmount": total_reverse_amount,
         "totalReverseCount": total_reverse_count,
         "totalSaleAmount": total_sale_amount,
-        "totalSaleCount": total_sale_count
+        "totalSaleCount": total_sale_count,
+        "totalPostAuthAmount": total_post_auth_amount or None,
+        "totalPostAuthCount": total_post_auth_count or None,
+        "totalPostAuthReverseAmount": total_post_auth_reverse_amount or None,
+        "totalPostAuthReverseCount": total_post_auth_reverse_count or None,
+        "totalPreAuthAmount": total_pre_auth_amount or None,
+        "totalPreAuthCount": total_pre_auth_count or None,
+        "totalPreAuthReverseAmount": total_pre_auth_reverse_amount or None,
+        "totalPreAuthReverseCount": total_pre_auth_reverse_count or None
+
     }
 
 

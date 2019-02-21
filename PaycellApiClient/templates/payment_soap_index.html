@@ -308,6 +308,46 @@
                                         </div>
                                     </div>
                                     <div class="row" style="padding-top:2em;">
+                                        <div class="col-4">
+                                            <label for="reconTotalPostAuthAmount">TotalPostAuthAmount</label>
+                                            <input type="text" class="form-control" id="reconTotalPostAuthAmount" placeholder="0" name="totalPostAuthAmount" value="{{reconcileRequest.totalPostAuthAmount}}">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="reconTotalPostAuthCount">TotalPostAuthCount</label>
+                                            <input type="text" class="form-control" id="reconTotalPostAuthCount" placeholder="0" name="totalPostAuthCount" value="{{reconcileRequest.totalPostAuthCount}}">
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:2em;">
+                                        <div class="col-4">
+                                            <label for="reconTotalPostAuthReverseAmount">TotalPostAuthAmount</label>
+                                            <input type="text" class="form-control" id="reconTotalPostAuthReverseAmount" placeholder="0" name="totalPostAuthReverseAmount" value="{{reconcileRequest.totalPostAuthReverseAmount}}">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="reconTotalPostAuthReverseCount">totalPostAuthReverseCount</label>
+                                            <input type="text" class="form-control" id="reconTotalPostAuthReverseCount" placeholder="0" name="totalPostAuthReverseCount" value="{{reconcileRequest.totalPostAuthReverseCount}}">
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:2em;">
+                                        <div class="col-4">
+                                            <label for="reconTotalPreAuthAmount">totalPreAuthAmount</label>
+                                            <input type="text" class="form-control" id="reconTotalPreAuthAmount" placeholder="0" name="totalPreAuthAmount" value="{{reconcileRequest.totalPreAuthAmount}}">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="reconTotalPreAuthCount">totalPreAuthCount</label>
+                                            <input type="text" class="form-control" id="reconTotalPreAuthCount" placeholder="0" name="totalPreAuthCount" value="{{reconcileRequest.totalPreAuthCount}}">
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:2em;">
+                                        <div class="col-4">
+                                            <label for="reconTotalPreAuthReverseAmount">totalPreAuthReverseAmount</label>
+                                            <input type="text" class="form-control" id="reconTotalPreAuthReverseAmount" placeholder="0" name="totalPreAuthReverseAmount" value="{{reconcileRequest.totalPreAuthReverseAmount}}">
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="reconTotalPreAuthReverseCount">totalPreAuthReverseCount</label>
+                                            <input type="text" class="form-control" id="reconTotalPreAuthReverseCount" placeholder="0" name="totalPreAuthReverseCount" value="{{reconcileRequest.totalPreAuthReverseCount}}">
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top:2em;">
                                         <div class="col-8">
                                            <label for="reconDate">reconcileDate</label>
                                             <input type="text" class="form-control" id="reconDate" name="reconciliationDate"
@@ -357,6 +397,54 @@
                                     <div class="col-4">
                                         <label for="TotalSaleCount">TotalSaleCount</label>
                                         <input type="text" class="form-control" id="TotalSaleCount" placeholder="5" disabled="true" value="{{reconcileResponse.totalSaleCount}}">
+                                    </div>
+                                </div>
+                                                                <div class="row" style="padding-top:2em;">
+                                    <div class="col-4">
+                                        <label for="TotalPostAuthAmount">TotalPostAuthAmount</label>
+                                        <input type="text" class="form-control" id="TotalPostAuthAmount" disabled="true" name="totalPostAuthAmount"
+                                               value="{{reconcileResponse.totalPostAuthAmount}}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="TotalPostAuthCount">TotalPostAuthCount</label>
+                                        <input type="text" class="form-control" id="TotalPostAuthCount" disabled="true" name="totalPostAuthCount"
+                                               value="{{reconcileResponse.totalPostAuthCount}}">
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-top:2em;">
+                                    <div class="col-4">
+                                        <label for="TotalPostAuthReverseAmount">TotalPostAuthAmount</label>
+                                        <input type="text" class="form-control" id="TotalPostAuthReverseAmount" disabled="true"
+                                               name="totalPostAuthReverseAmount" value="{{reconcileResponse.totalPostAuthReverseAmount}}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="TotalPostAuthReverseCount">totalPostAuthReverseCount</label>
+                                        <input type="text" class="form-control" id="TotalPostAuthReverseCount" disabled="true" name="totalPostAuthReverseCount"
+                                               value="{{reconcileResponse.totalPostAuthReverseCount}}">
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-top:2em;">
+                                    <div class="col-4">
+                                        <label for="TotalPreAuthAmount">totalPreAuthAmount</label>
+                                        <input type="text" class="form-control" id="TotalPreAuthAmount" disabled="true" name="totalPreAuthAmount"
+                                               value="{{reconcileResponse.totalPreAuthAmount}}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="TotalPreAuthCount">totalPreAuthCount</label>
+                                        <input type="text" class="form-control" id="TotalPreAuthCount" disabled="true" name="totalPreAuthCount"
+                                               value="{{reconcileResponse.totalPreAuthCount}}">
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-top:2em;">
+                                    <div class="col-4">
+                                        <label for="TotalPreAuthReverseAmount">totalPreAuthReverseAmount</label>
+                                        <input type="text" class="form-control" id="TotalPreAuthReverseAmount" disabled="true" name="totalPreAuthReverseAmount"
+                                               value="{{reconcileResponse.totalPreAuthReverseAmount}}">
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="TotalPreAuthReverseCount">totalPreAuthReverseCount</label>
+                                        <input type="text" class="form-control" id="TotalPreAuthReverseCount" disabled="true" name="totalPreAuthReverseCount"
+                                               value="{{reconcileResponse.totalPreAuthReverseCount}}">
                                     </div>
                                 </div>
                                 <div class="row" style="padding-top:2em;">
